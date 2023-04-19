@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Phishugn Deector",
+  "version": "1.0",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "128": "icon.png"
+    }
+  },
+  "permissions": [
+    "activeTab",
+    "storage",
+    "tabs",
+    "identity"
+  ],
+  "oauth2": {
+    "client_id": "334753692866-p7s6vmdij7ofma6rcj8kes7deie2ig4m.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/gmail.readonly"
+    ]
+  },
+  "icons": {
+    "128": "icon.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
