@@ -48,11 +48,11 @@ def get_summarySpacy(article, summary_length=0.3):
     return summary[0]
 
 
-@app.route('/check_phishing', methods=['POST'])
+@app.route('/checkPhishing', methods=['POST'])
 def check_phishing():
     return jsonify("model is wrong")
 
-@app.route('/summarize', methods=['POST'])
+@app.route('/summarizeEmail', methods=['POST'])
 def summarize():
     data = request.get_json()
     email_content = data.get('email', '')

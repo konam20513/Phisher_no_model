@@ -6,7 +6,9 @@ async function checkPhishing(emailContent) {
     });
   
     const result = await response.json();
-    return result;
+    return jsonify({
+      "result": "phishing" 
+    }) 
 }
   
 async function summarizeEmail(emailContent) {

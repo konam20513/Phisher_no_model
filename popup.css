@@ -3,23 +3,23 @@ body {
     color: #fff;
     font-family: Arial, sans-serif;
     padding: 10px;
-  }
+}
   
-  button {
-    background-color: #555;
-    border: none;
-    color: #fff;
-    cursor: pointer;
-    display: block;
-    margin: 5px 0;
-    padding: 10px;
-    width: 100%;
-  }
-  
-  button:hover {
-    background-color: #777;
-  }
-  
-  #result {
-    margin-top: 10px;
-  }
+button {
+  background-color: #555;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: block;
+  margin: 5px 0;
+  padding: 10px;
+  width: 100%;
+}
+
+button:hover {
+  background-color: #777;
+}
+
+#result {
+  margin-top: 10px;
+}
