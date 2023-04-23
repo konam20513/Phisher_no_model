@@ -9,7 +9,7 @@
     }
   },
   "permissions": [
-    "activeTab",
+    "activeTab", 
     "storage",
     "tabs",
     "identity"
@@ -25,5 +25,14 @@
   },
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [ "http://127.0.0.1:5000/*" ],
+      "matches":["<all_urls>"]
+    }
+  ]
 }
