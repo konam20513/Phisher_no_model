@@ -18,7 +18,7 @@ async function getAccessToken() {
 }
 
 async function getCurrentViewedEmail() {
-  //await getAccessToken();
+  await getAccessToken();
   let message;
   await fetch(`https://www.googleapis.com/gmail/v1/users/me/messages/list?labelIds=INBOX&maxResults=1&access_token=${accessToken}`)
   .then(res => res.json())
