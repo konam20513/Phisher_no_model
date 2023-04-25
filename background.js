@@ -1,110 +1,93 @@
-// Load credentials 
-fetch('/credentials.json')
-  .then(response => response.json())
-  .then(credentials => {
-    // Use credentials
-  })
+// Get access token  
+let accessToken;
 
-// Check if email is phishing
-async function checkPhishing(emailContent) {
-  const response = fetch('http://127.0.0.1:5000/check_phishing', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: emailContent }),
-  });
-  result =  response.json();
-  return result.result; 
-}
-
-// Summarize email 
-async function summarizeEmail(emailContent) {
-  const response = fetch('http://127.0.0.1:5000/summarize', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: emailContent }),
-  });
-
-  const summary = response.json();
-  return summary;
-}
-
-// Get access token 
 async function getAccessToken() {
-  return new Promise((resolve, reject) => {
+  accessToken = await new Promise((resolve, reject) => {
     chrome.identity.getAuthToken({
       interactive: true,
       scopes: ['https://www.googleapis.com/auth/gmail.readonly']
-    }, (token) => {
+    }, token => {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError);
       } else {
+        accessToken = token;
         resolve(token);
       }
     });
-  });
+  });  
 }
 
-// Refresh access token 
-async function refreshAccessToken(accessToken) {
-  const response = await fetch('https://www.googleapis.com/oauth2/v4/token', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: `client_id=${credentials.client_id}&client_secret=${credentials.client_secret}&refresh_token=${accessToken}&grant_type=refresh_token` 
+async function getCurrentViewedEmail() {
+  //await getAccessToken();
+  let message;
+  await fetch(`https://www.googleapis.com/gmail/v1/users/me/messages/list?labelIds=INBOX&maxResults=1&access_token=${accessToken}`)
+  .then(res => res.json())
+  .then(data => {
+    if (data.messages && data.messages.length > 0) {
+      const messageId = data.messages[0].id;
+      return fetch(`https://www.googleapis.com/gmail/v1/users/me/messages/${messageId}?access_token=${accessToken}`)
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    message = data;  
   });
-  const data = await response.json();
-  return data.access_token; 
+  if (!message) {
+    throw new Error('No emails found in the current view');
+  } 
+  return message; 
 }
 
-// Get email content 
-async function getEmailContent() {
-  try { 
-    const accessToken = await getAccessToken();
-    const newToken = await refreshAccessToken(accessToken);
-    
-    // Register event listener
-    gmail.events.on("message.opened", async () => {
-      try {
-        // Get opened message ID
-        const messageId = await gmail.messages.get({
-          userId: "me",
-          id: gmail.messageId
-        });
-        
-        // Get full message content
-        const { data } = await gmail.users.messages.get({
-          userId: "me", 
-          id: messageId.id,
-          auth: newToken  // Use refreshed access token
-        });
-        
-        return data.message;  
-      } catch (error) {
-        console.error(JSON.stringify(error));
-      }
+
+async function checkPhishing(sendResponse) {
+  try {
+    const message = await getCurrentViewedEmail();
+    const emailContent = message.payload.parts[0].body.data;
+    const response = await fetch('http://akhilo0o.pythonanywhere.com/checkPhishing', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: emailContent }),
     });
-  } catch (error) {
-    console.error(JSON.stringify(error));
+    const result = await response.json();
+    sendResponse(JSON.stringify(result.result)); // Convert result to string
+  } catch (err) {
+    console.log(err);
+    sendResponse(JSON.stringify(err)); // Convert error to string
   }
 }
- 
 
-// Listen for messages from extension
+
+
+async function summarizeEmail(sendResponse) {
+  try {
+    const message = await getCurrentViewedEmail();
+    const emailContent = message.payload.parts[0].body.data;
+    const summaryLength = 0.3; // Change this value to the desired summary length
+    const response = await fetch('http://akhilo0o.pythonanywhere.com/summarizeEmail', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: emailContent, summary_length: summaryLength }),
+    });
+    const summary = await response.json();
+    sendResponse(JSON.stringify(summary)); // Convert summary to string
+  } catch (err) {
+    console.log(err);
+    sendResponse(JSON.stringify(err)); // Convert error to string
+  } 
+}
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'checkPhishing') {
-    getEmailContent().then(async emailContent => {
-      const result = checkPhishing(emailContent);
-      sendResponse({result});
+    checkPhishing(result => {
+      sendResponse(JSON.stringify(result));
     });
-    return true; 
-  } 
+    return true;
+  }
   if (request.action === 'summarizeEmail') {
-    getEmailContent().then(async emailContent => {
-      const summary = summarizeEmail(emailContent);
-      sendResponse({summary});
+    summarizeEmail(result => {
+      sendResponse(JSON.stringify(result));
     });
-    return true; 
+    return true;
   }
 });
 

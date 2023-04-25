@@ -2,6 +2,7 @@
   "manifest_version": 3,
   "name": "Phisher",
   "version": "1.0",
+  "description": "An extension which checks for malicious links in emails",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -31,7 +32,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": [ "http://127.0.0.1:5000/*" ],
+      "resources": [ "http://akhilo0o.pythonanywhere.com/*" ],
       "matches":["<all_urls>"]
     }
   ]

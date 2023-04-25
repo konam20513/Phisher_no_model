@@ -6,7 +6,8 @@ from spacy.lang.en.stop_words import STOP_WORDS
 
 app = Flask(__name__)
 
-CORS(app, origins='chrome-extension://ekdkdcknogcieleaaalbcljgacmpnemk', supports_credentials=True, methods=['POST', 'GET'])
+#(app, origins='chrome-extension://ekdkdcknogcieleaaalbcljgacmpnemk', supports_credentials=True, methods=['POST', 'GET'])
+CORS(app, origins='chrome-extension://*', supports_credentials=True, methods=['POST', 'GET'])
 
 stopwords = list(STOP_WORDS)
 nlp = spacy.load('en_core_web_sm')
@@ -55,12 +56,18 @@ def index():
 
 @app.route('/checkPhishing', methods=['POST'])
 def check_phishing():
+    #data = request.get_json()
+    #email_content = data.get('email', '')
+    data = request.get_data()
+    email_content = data.decode('utf-8')
+    if not email_content:
+        return jsonify({'error': 'Invalid email content'}), 400
     return jsonify({'result':'malicious'})
 
 @app.route('/summarizeEmail', methods=['POST'])
 def summarize():
-    data = request.get_json()
-    email_content = data.get('email', '')
+    data = request.get_data()
+    email_content = data.decode('utf-8') 
     summary_length = data.get('summary_length', 0.3)
 
     if not email_content:
@@ -71,7 +78,8 @@ def summarize():
 
 @app.after_request
 def after_request(response):
-  response.headers.add('Access-Control-Allow-Origin', 'chrome-extension://ekdkdcknogcieleaaalbcljgacmpnemk')
+  response.headers.add('Access-Control-Allow-Origin', '*', supports_credentials=True)
+  #response.headers.add('Access-Control-Allow-Origin', 'chrome-extension://ekdkdcknogcieleaaalbcljgacmpnemk')
   return response
 
 
