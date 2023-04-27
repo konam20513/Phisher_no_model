@@ -3,12 +3,13 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import spacy
 from spacy.lang.en.stop_words import STOP_WORDS
+import json
 
 app = Flask(__name__)
 
 #(app, origins='chrome-extension://ekdkdcknogcieleaaalbcljgacmpnemk', supports_credentials=True, methods=['POST', 'GET'])
-CORS(app, origins='chrome-extension://*', supports_credentials=True, methods=['POST', 'GET'])
-
+CORS(app,origins=['http://localhost','chrome-extension://ekdkdcknogcieleaaalbcljgacmpnemk', 'https://akhilo0o.pythonanywhere.com'], supports_credentials=True, methods=['POST', 'GET'])
+                                                    
 stopwords = list(STOP_WORDS)
 nlp = spacy.load('en_core_web_sm')
 
@@ -51,37 +52,38 @@ def get_summarySpacy(article, summary_length=0.3):
 
 @app.route('/')
 def index():
-    return "Hello!!"
+    return "Deploy 15"
 
 
-@app.route('/checkPhishing', methods=['POST'])
+@app.route('/checkPhishing', methods=['GET', 'POST'])
 def check_phishing():
-    #data = request.get_json()
-    #email_content = data.get('email', '')
     data = request.get_data()
-    email_content = data.decode('utf-8')
+    email_content = json.loads(data)  # Decode JSON data
     if not email_content:
         return jsonify({'error': 'Invalid email content'}), 400
     return jsonify({'result':'malicious'})
 
-@app.route('/summarizeEmail', methods=['POST'])
+
+
+
+@app.route('/summarizeEmail', methods=['GET', 'POST'])
 def summarize():
     data = request.get_data()
-    email_content = data.decode('utf-8') 
-    summary_length = data.get('summary_length', 0.3)
+    email_content = json.loads(data)  # Decode JSON data
+    summary_length = email_content.get('summary_length', 0.3)
 
     if not email_content:
         return jsonify({'error': 'Invalid email content'}), 400
 
     summary = get_summarySpacy(email_content, summary_length)
-    return jsonify(summary)
+    return jsonify({'summary': summary})
 
 @app.after_request
 def after_request(response):
-  response.headers.add('Access-Control-Allow-Origin', '*', supports_credentials=True)
-  #response.headers.add('Access-Control-Allow-Origin', 'chrome-extension://ekdkdcknogcieleaaalbcljgacmpnemk')
+  response.headers.add('Access-Control-Allow-Origin', 'chrome-extension://ekdkdcknogcieleaaalbcljgacmpnemk')  
+  response.headers.add('Content-Type', 'application/json')
   return response
-
+  
 
 if __name__ == '__main__':
     app.run(debug=True)
