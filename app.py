@@ -7,7 +7,6 @@ import json
 
 app = Flask(__name__)
 
-#(app, origins='chrome-extension://ekdkdcknogcieleaaalbcljgacmpnemk', supports_credentials=True, methods=['POST', 'GET'])
 CORS(app,origins=['http://localhost','chrome-extension://xxxx', 'https://akhilo0o.pythonanywhere.com'], supports_credentials=True, methods=['POST', 'GET'])
                                                     
 stopwords = list(STOP_WORDS)
