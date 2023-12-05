@@ -17,7 +17,6 @@
     "webRequest"
   ],
   "oauth2": {
-    "client_id": "334753692866-p7s6vmdij7ofma6rcj8kes7deie2ig4m.apps.googleusercontent.com",
     "scopes": [
       "https://www.googleapis.com/auth/gmail.readonly"
     ]
@@ -34,7 +33,7 @@
   "web_accessible_resources": [
     {
       "resources": [ "http://akhilo0o.pythonanywhere.com/*" ],
-      "matches":["chrome-extension://ekdkdcknogcieleaaalbcljgacmpnemk/*"]
+      "matches":["chrome-extension://xxxx/*"]
     }
   ],
   "host_permissions": [ "http://akhilo0o.pythonanywhere.com/*"]
