@@ -8,7 +8,7 @@ import json
 app = Flask(__name__)
 
 #(app, origins='chrome-extension://ekdkdcknogcieleaaalbcljgacmpnemk', supports_credentials=True, methods=['POST', 'GET'])
-CORS(app,origins=['http://localhost','chrome-extension://ekdkdcknogcieleaaalbcljgacmpnemk', 'https://akhilo0o.pythonanywhere.com'], supports_credentials=True, methods=['POST', 'GET'])
+CORS(app,origins=['http://localhost','chrome-extension://xxxx', 'https://akhilo0o.pythonanywhere.com'], supports_credentials=True, methods=['POST', 'GET'])
                                                     
 stopwords = list(STOP_WORDS)
 nlp = spacy.load('en_core_web_sm')
@@ -80,7 +80,7 @@ def summarize():
 
 @app.after_request
 def after_request(response):
-  response.headers.add('Access-Control-Allow-Origin', 'chrome-extension://ekdkdcknogcieleaaalbcljgacmpnemk')  
+  response.headers.add('Access-Control-Allow-Origin', 'chrome-extension://xxxx')  
   response.headers.add('Content-Type', 'application/json')
   return response
   
